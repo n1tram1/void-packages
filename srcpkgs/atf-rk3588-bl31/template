@@ -1,0 +1,41 @@
+# Template file for 'atf-rk3588-bl31'
+pkgname=atf-rk3588-bl31
+revision=1
+version=2024.11.01 # Date at time of creating the package.
+archs="aarch64*"
+hostmakedepends="git cross-arm-none-eabi"
+short_desc="ARM Trusted Firmware for Rockchip rk3588 boards (ARMv8, bl31 option)"
+maintainer="Martin Schmidt"
+license="BSD-3-Clause"
+homepage="https://developer.trustedfirmware.org/dashboard/view/6/"
+nostrip=yes
+_gitrev=7e9d2a56e7aac24ce6046158d5802b28223b2ea9 # Main branch at the time of creation, no release already has rk3588 support.
+
+do_fetch() {
+        # Fetch from git mirror
+        rm -rf ${wrksrc}
+        git clone https://github.com/ARM-software/arm-trusted-firmware.git ${wrksrc}
+        cd ${wrksrc}
+        git checkout ${_gitrev}
+}
+
+post_patch() {
+	# Adjust the baud rate to match uboot and the kernel for the PBP
+	vsed -i -e 's/\(RK3588_BAUDRATE\s*\)115200/\11500000/' \
+		plat/rockchip/rk3588/rk3588_def.h
+}
+
+do_build() {
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
+	# FIXME:
+	# gnu as is complaining of "-x" invalid option
+	# if [ "$CROSS_BUILD" ]; then
+	# 	export CROSS_COMPILE=${XBPS_CROSS_TRIPLET}-
+	# fi
+	make CROSS_COMPILE=aarch64-linux-musl- ${makejobs} PLAT=rk3588 bl31
+}
+
+do_install() {
+	vinstall build/rk3588/release/bl31/bl31.elf 0755 usr/lib/trusted-firmware-a/rk3588
+	vlicense docs/license.rst
+}
