@@ -1,0 +1,26 @@
+# Template file for 'orangepi-5-plus-rkbin'
+pkgname=orangepi-5-plus-rkbin
+revision=1
+version=v1.18
+archs="aarch64*"
+hostmakedepends="git cross-arm-none-eabi"
+short_desc="Rockchip loader binary for Orangepi 5 Plus"
+maintainer="Martin Schmidt"
+license="BSD-3-Clause"
+homepage="https://github.com/rockchip-linux/rkbin"
+nostrip=yes
+_gitrev=b9183559cabebed120ad431a614b291fee04c498
+
+do_fetch() {
+        # We fetch a Git repo here because that is where rkbin is located.
+        rm -rf ${wrksrc}
+				git clone https://github.com/rockchip-linux/rkbin.git ${wrksrc}
+        cd ${wrksrc}
+        git checkout ${_gitrev}
+}
+
+do_install() {
+	vinstall bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.18.bin 0755 usr/lib/rkbin
+	#vcopy bin/** usr/lib/rkbin/bin
+	vlicense LICENSE
+}
