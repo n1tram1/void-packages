@@ -1,0 +1,11 @@
+# Template file for 'orangepi-5-plus-base'
+pkgname=orangepi-5-plus-base
+version=1
+revision=1
+archs="aarch64*"
+build_style=meta
+depends="linux orangepi-5-plus-uboot u-boot-menu dracut"
+short_desc="Void Linux OrangePi 5 Plus platform package"
+maintainer="Martin Schmidt"
+license="Public Domain"
+homepage="https://www.voidlinux.org"
